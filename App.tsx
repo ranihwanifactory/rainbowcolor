@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { LEVELS, COLORS } from './constants';
 import { GameState, Color } from './types';
 import Tube from './components/Tube';
-import { getCheeringMessage } from './services/geminiService';
+import { getLocalCheeringMessage } from './services/cheeringService';
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>({
@@ -146,11 +146,14 @@ const App: React.FC = () => {
     }
   };
 
-  const handleWin = async () => {
+  const handleWin = () => {
+    // Synchronously set local message (or with a tiny delay for effect)
     setIsLoading(true);
-    const msg = await getCheeringMessage(gameState.level + 1);
-    setAiMessage(msg);
-    setIsLoading(false);
+    setTimeout(() => {
+      const msg = getLocalCheeringMessage();
+      setAiMessage(msg);
+      setIsLoading(false);
+    }, 400);
   };
 
   const undo = () => {
@@ -234,7 +237,7 @@ const App: React.FC = () => {
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-400 via-yellow-400 to-green-400"></div>
             <h2 className="text-4xl font-black text-pink-500 mb-4 animate-bounce">참 잘했어요! ✨</h2>
             
-            <div className="bg-blue-50 p-4 rounded-2xl mb-6 min-h-[100px] flex items-center justify-center italic text-blue-700 text-lg">
+            <div className="bg-blue-50 p-4 rounded-2xl mb-6 min-h-[100px] flex items-center justify-center italic text-blue-700 text-lg whitespace-pre-line">
               {isLoading ? (
                 <div className="flex gap-2">
                   <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
